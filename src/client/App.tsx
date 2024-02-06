@@ -1,64 +1,27 @@
 import { useState } from "react";
 import "./styles.css";
+import { NewTodoForm } from "./NewTodoForm";
+import { TodoList } from "./TodoList";
+import { TodoItemProps } from "./TodoItem";
 
-function App() {
-	const [todos, setTodos] = useState([]);
-	const [newItem, setNewItem] = useState("");
+export default function App() {
+	const [todos, setTodos] = useState(() => {});
 
 	function addTodo(title: string) {}
 
-	function toggleTodo(id: string, completed: boolean) {}
+	function toggleTodo(id: number, completed: boolean) {}
 
-	function deleteTodo(id: string) {}
-
-	function handleSubmit(e: React.FormEvent) {
-		e.preventDefault();
-		if (newItem === "") return;
-
-		addTodo(newItem);
-
-		setNewItem("");
-	}
-
-	let completed = false;
-	const id = "tempId123";
+	function deleteTodo(id: number) {}
 
 	return (
 		<>
-			<form onSubmit={handleSubmit} className="new-item-form">
-				<div className="form-row">
-					<label htmlFor="item">New Item</label>
-					<input
-						value={newItem}
-						onChange={(e) => setNewItem(e.target.value)}
-						type="text"
-						id="item"
-					/>
-				</div>
-				<button>Add</button>
-			</form>
-
+			<NewTodoForm onSubmit={addTodo} />
 			<h1 className="header">Todo List</h1>
-			<ul>
-				<li>
-					<label>
-						<input
-							type="checkbox"
-							checked={completed}
-							onChange={(e) => toggleTodo(id, e.target.checked)}
-						/>
-						{"Todo Item Title"}
-					</label>
-					<button
-						onClick={() => deleteTodo(id)}
-						className="btn btn-danger"
-					>
-						Delete
-					</button>
-				</li>
-			</ul>
+			<TodoList
+				todos={todos}
+				toggleTodo={toggleTodo}
+				deleteTodo={deleteTodo}
+			/>
 		</>
 	);
 }
-
-export default App;
