@@ -9,6 +9,7 @@ const mongoDBURL =
 const app = express();
 
 app.use(express.json());
+app.use(express.static(process.cwd() + "/dist"));
 app.set("port", process.env.PORT || 3000);
 
 // app.use(cors());
@@ -24,7 +25,11 @@ mongoose
 	.then(() => {
 		console.log("App connected to database");
 
-		ViteExpress.listen(app, app.get("port"), () =>
+		// ViteExpress.listen(app, app.get("port"), () =>
+		// 	console.log(`Server is running on port ${app.get("port")}`)
+		// );
+
+		app.listen(app.get("port"), () =>
 			console.log(`Server is running on port ${app.get("port")}`)
 		);
 	})
