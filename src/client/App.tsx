@@ -7,31 +7,88 @@ import { TodoItemProps } from "./TodoItem";
 export default function App() {
 	const [todos, setTodos] = useState<TodoItemProps[]>([]);
 
-	function addTodo(title: string) {
-		setTodos((currentTodos: TodoItemProps[]) => {
-			return [
-				...currentTodos,
-				{ id: crypto.randomUUID(), title, completed: false },
-			];
-		});
-	}
+	useEffect(() => {
+		const fetchTodos = async () => {
+			try {
+				const response = await fetch("/todos");
+				const responseJson = await response.json();
+				const todosData: TodoItemProps[] = responseJson.data;
 
-	function toggleTodo(id: number, completed: boolean) {
-		setTodos((currentTodos: TodoItemProps[]) => {
-			return currentTodos.map((todo) => {
-				if (todo.id === id) {
-					return { ...todo, completed };
-				}
+				setTodos(todosData);
+			} catch (error: any) {
+				console.error(`Error fetching todo data:`, error.message);
+			}
+		};
 
-				return todo;
+		fetchTodos();
+	}, []);
+
+	async function addTodo(title: string) {
+		try {
+			const response = await fetch("/todos", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ title, completed: false }),
 			});
-		});
+
+			if (!response.ok) {
+				throw new Error(`Failed to add todo: ${response.statusText}`);
+			}
+
+			const newTodo = await response.json();
+			setTodos((currentTodos: TodoItemProps[]) => [
+				...currentTodos,
+				newTodo,
+			]);
+		} catch (error: any) {
+			console.error(`Error adding todo:`, error.message);
+		}
 	}
 
-	function deleteTodo(id: number) {
-		setTodos((currentTodos: TodoItemProps[]) => {
-			return currentTodos.filter((todo) => todo.id !== id);
-		});
+	async function toggleTodo(id: string, completed: boolean) {
+		try {
+			const response = await fetch(`/todos/${id}`, {
+				method: "PUT",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ completed }),
+			});
+
+			if (!response.ok) {
+				throw new Error(
+					`Failed to update todo: ${response.statusText}`
+				);
+			}
+
+			// console.log("Todo updated successfully");
+			setTodos((currentTodos) =>
+				currentTodos.map((todo) =>
+					todo._id === id ? { ...todo, completed } : todo
+				)
+			);
+		} catch (error: any) {
+			console.error(`Error updating todo:`, error.message);
+		}
+	}
+
+	async function deleteTodo(id: string) {
+		try {
+			const response = await fetch(`/todos/${id}`, {
+				method: "DELETE",
+			});
+
+			if (!response.ok) {
+				throw new Error(
+					`Failed to delete todo: ${response.statusText}`
+				);
+			}
+
+			// console.log("Todo deleted successfully");
+			setTodos((currentTodos: TodoItemProps[]) =>
+				currentTodos.filter((todo) => todo._id !== id)
+			);
+		} catch (error: any) {
+			console.error(`Error deleting todo:`, error.message);
+		}
 	}
 
 	return (

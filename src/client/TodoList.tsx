@@ -16,7 +16,7 @@ export function TodoList({
 				return (
 					<TodoItem
 						{...todo}
-						key={todo.id}
+						key={todo._id}
 						toggleTodo={toggleTodo}
 						deleteTodo={deleteTodo}
 					/>

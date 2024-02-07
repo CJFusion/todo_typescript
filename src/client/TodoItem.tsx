@@ -1,17 +1,17 @@
 export interface TodoItemProps {
-	id: number;
+	_id: string;
 	title: string;
 	completed: boolean;
 }
 
 export interface TodoItemActions {
-	toggleTodo: (id: number, checked: boolean) => void;
-	deleteTodo: (id: number) => void;
+	toggleTodo: (id: string, checked: boolean) => void;
+	deleteTodo: (id: string) => void;
 }
 
 export function TodoItem({
 	completed,
-	id,
+	_id: id,
 	title,
 	toggleTodo,
 	deleteTodo,
